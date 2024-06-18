@@ -22,7 +22,7 @@
     "seed": "cross-env medusa seed -f ./data/seed.json",
     "start": "cross-env npm run build && medusa start",
     "start:custom": "cross-env npm run build && node --preserve-symlinks --trace-warnings index.js",
-    "dev": "cross-env npm run build:server && medusa develop"
+    "dev": "cross-env medusa seed -f ./data/seed.json && cross-env npm run build:server && medusa develop"
   },
   "dependencies": {
     "@medusajs/admin": "^7.1.14",
@@ -38,6 +38,7 @@
     "cors": "^2.8.5",
     "dotenv": "16.3.1",
     "express": "^4.17.2",
+    "medusa-file-github": "^0.0.7",
     "medusa-fulfillment-manual": "latest",
     "medusa-interfaces": "latest",
     "medusa-payment-manual": "latest",

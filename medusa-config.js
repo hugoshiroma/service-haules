@@ -58,6 +58,15 @@ const plugins = [
       enableUI: true,
     },
   },
+  {
+    resolve: 'medusa-file-github',
+    options: {
+      owner: process.env.GITHUB_OWNER,
+      repo: process.env.GITHUB_REPO,
+      token: process.env.GITHUB_TOKEN,
+      branch: process.env.GITHUB_BRANCH,
+    },
+  },
 ];
 
 const modules = {
