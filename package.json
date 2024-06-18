@@ -43,7 +43,7 @@
     "medusa-payment-manual": "latest",
     "medusa-payment-stripe": "latest",
     "prism-react-renderer": "^2.0.4",
-    "string-width": "4.1.0",
+    "string-width": "7.1.0",
     "typeorm": "^0.3.16"
   },
   "devDependencies": {
