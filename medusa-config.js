@@ -58,6 +58,16 @@ const plugins = [
       enableUI: true,
     },
   },
+  {
+    resolve: 'medusa-file-github',
+    options: {
+      owner: process.env.CDN_GITHUB_OWNER,
+      repo: process.env.CDN_GITHUB_REPO,
+      path: 'public/uploadedProducts',
+      github_token: process.env.CDN_GITHUB_TOKEN,
+      branch: process.env.CDN_GITHUB_BRANCH,
+    },
+  },
 ];
 
 const modules = {
