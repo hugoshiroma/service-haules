@@ -21,12 +21,19 @@ try {
   dotenv.config({ path: process.cwd() + '/' + ENV_FILE_NAME });
 } catch (e) {}
 
-// CORS when consuming Medusa from admin
+//PROD
 const ADMIN_CORS =
-  process.env.ADMIN_CORS || 'http://localhost:7000,http://localhost:7001';
+  process.env.ADMIN_CORS || 'https://service-haules.vercel.app';
 
-// CORS to avoid issues when consuming Medusa from a client
-const STORE_CORS = process.env.STORE_CORS || 'http://localhost:8000';
+const STORE_CORS =
+  process.env.STORE_CORS || 'https://service-haules.vercel.app';
+// LOCAL
+// // CORS when consuming Medusa from admin
+// const ADMIN_CORS =
+//   process.env.ADMIN_CORS || 'http://localhost:7000,http://localhost:7001';
+
+// // CORS to avoid issues when consuming Medusa from a client
+// const STORE_CORS = process.env.STORE_CORS || 'http://localhost:8000';
 
 const DATABASE_URL =
   process.env.DATABASE_URL || 'postgres://localhost/medusa-starter-default';
@@ -46,9 +53,18 @@ const plugins = [
     resolve: '@medusajs/admin',
     /** @type {import('@medusajs/admin').PluginOptions} */
     options: {
+      serve: true,
       autoRebuild: true,
+      backend: 'https://service-haules.vercel.app',
+      path: '/app',
+      outDir: 'build',
       develop: {
-        open: process.env.OPEN_BROWSER !== 'false',
+        open: true,
+        host: 'service-haules.vercel.app',
+        logLevel: 'error',
+        stats: 'normal',
+        allowedHosts: 'auto',
+        webSocketURL: undefined,
       },
     },
   },
