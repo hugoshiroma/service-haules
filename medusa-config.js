@@ -23,10 +23,10 @@ try {
 
 //PROD
 const ADMIN_CORS =
-  process.env.ADMIN_CORS || 'https://service-haules.vercel.app';
+  process.env.ADMIN_CORS || 'https://service-haules.onrender.com';
 
 const STORE_CORS =
-  process.env.STORE_CORS || 'https://service-haules.vercel.app';
+  process.env.STORE_CORS || 'https://service-haules.onrender.com';
 // LOCAL
 // // CORS when consuming Medusa from admin
 // const ADMIN_CORS =
@@ -55,12 +55,12 @@ const plugins = [
     options: {
       serve: true,
       autoRebuild: true,
-      backend: 'https://service-haules.vercel.app',
+      backend: 'https://service-haules.onrender.com',
       path: '/app',
       outDir: 'build',
       develop: {
         open: true,
-        host: 'service-haules.vercel.app',
+        host: 'service-haules.onrender.com',
         logLevel: 'error',
         stats: 'normal',
         allowedHosts: 'auto',
