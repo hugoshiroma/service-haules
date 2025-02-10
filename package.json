@@ -25,27 +25,28 @@
     "dev": "cross-env medusa seed -f ./data/seed.json && cross-env npm run build:server && medusa develop"
   },
   "dependencies": {
-    "@medusajs/admin": "^7.1.14",
+    "@medusajs/admin": "6.0.5",
     "@medusajs/cache-inmemory": "latest",
     "@medusajs/cache-redis": "^1.9.1",
     "@medusajs/event-bus-local": "latest",
     "@medusajs/event-bus-redis": "^1.8.13",
     "@medusajs/file-local": "latest",
-    "@medusajs/medusa": "^1.20.6",
-    "@rsc-labs/medusa-store-analytics": "^0.13.1",
+    "@medusajs/medusa": "1.13.1",
     "@tanstack/react-query": "4.22.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "16.3.1",
     "express": "^4.17.2",
-    "medusa-file-github": "^0.0.7",
+    "medusa-file-github": "latest",
     "medusa-fulfillment-manual": "latest",
     "medusa-interfaces": "latest",
     "medusa-payment-manual": "latest",
     "medusa-payment-stripe": "latest",
     "prism-react-renderer": "^2.0.4",
     "string-width": "4.1.0",
-    "typeorm": "^0.3.16"
+    "typeorm": "^0.3.16",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
@@ -91,5 +92,6 @@
     ],
     "coverageDirectory": "./coverage",
     "testEnvironment": "node"
-  }
+  },
+  "packageManager": "yarn@1.22.19"
 }

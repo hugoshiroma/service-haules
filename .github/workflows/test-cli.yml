@@ -1,18 +1,18 @@
 name: Test CLI
 on:
- pull_request:
-  branches:
-    - 'feat/v2'
-    - 'feat/v2-ci'
+  pull_request:
+    branches:
+      - 'feat/v2'
+      - 'feat/v2-ci'
 
 jobs:
   test-cli-yarn:
-    name: "Test CLI (Yarn)"
+    name: 'Test CLI (Yarn)'
     env:
       NODE_ENV: CI
       REDIS_URL: redis://localhost:6379
-      DATABASE_URL: "postgres://postgres:postgres@localhost/cli-test"
-      POSTGRES_URL: "postgres://postgres:postgres@localhost/cli-test"
+      DATABASE_URL: 'postgres://postgres:postgres@localhost/cli-test'
+      POSTGRES_URL: 'postgres://postgres:postgres@localhost/cli-test'
     services:
       redis:
         image: redis
@@ -23,7 +23,7 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
- 
+
       postgres:
         image: postgres
         env:
@@ -37,7 +37,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
- 
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -54,7 +54,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20
-  
+
       - name: Install Dependencies
         run: yarn install
 
@@ -74,21 +74,21 @@ jobs:
         run: yarn dev &
 
       - name: Wait for live server response
-        shell: "bash"
+        shell: 'bash'
         run: ./.github/scripts/wait-for-server-live.sh
 
       - name: Kill server
-        shell: "bash"
+        shell: 'bash'
         run: kill -9 $(lsof -t -i :9000)
-          
+
   test-cli-npm:
-    name: "Test CLI (npm)"
+    name: 'Test CLI (npm)'
     env:
       NODE_ENV: CI
       REDIS_URL: redis://localhost:6379
-      DATABASE_URL: "postgres://postgres:postgres@localhost/cli-test"
-      POSTGRES_URL: "postgres://postgres:postgres@localhost/cli-test"
-    services: 
+      DATABASE_URL: 'postgres://postgres:postgres@localhost/cli-test'
+      POSTGRES_URL: 'postgres://postgres:postgres@localhost/cli-test'
+    services:
       postgres:
         image: postgres
         env:
@@ -102,7 +102,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
- 
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -119,10 +119,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: "npm"
-  
+          cache: 'npm'
+
       - name: Install Dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Check CLI tool is installed
         run: ./node_modules/.bin/medusa -v
@@ -140,10 +140,9 @@ jobs:
         run: npm run dev -- &
 
       - name: Wait for live server response
-        shell: "bash"
+        shell: 'bash'
         run: ./.github/scripts/wait-for-server-live.sh
 
       - name: Kill server
-        shell: "bash"
+        shell: 'bash'
         run: kill -9 $(lsof -t -i :9000)
-          
