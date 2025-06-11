@@ -14,8 +14,9 @@
   ],
   "scripts": {
     "build": "medusa build",
+    "build:windows": "medusa build && copy .env .medusa\\server\\.env.production && cd .medusa\\server && yarn && cd ..\\..",
     "seed": "medusa exec ./src/scripts/seed.ts",
-    "start": "medusa start",
+    "start": "cd .medusa/server && medusa start",
     "dev": "medusa develop",
     "lint": "eslint . --ext .ts,.tsx",
     "test:integration:http": "TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
