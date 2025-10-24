@@ -3,8 +3,17 @@ import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
 module.exports = defineConfig({
-  plugins: [],
+  plugins: [
+    {
+      resolve: '@medusajs/admin',
+      /** @type {import('@medusajs/admin').PluginOptions} */
+      options: {
+        autoRebuild: true,
+      },
+    },
+  ],
   projectConfig: {
+    workerMode: 'server',
     databaseUrl: process.env.DATABASE_URL,
     http: {
       storeCors: process.env.STORE_CORS!,
