@@ -1,5 +1,5 @@
 import { SubscriberArgs, type SubscriberConfig } from '@medusajs/framework'
-import { computeDraftOrderAdjustmentsWorkflow } from '@medusajs/core-flows'
+import { computeDraftOrderAdjustmentsWorkflow } from '@medusajs/medusa/core-flows'
 
 export default async function handleDraftOrderConverted(args: SubscriberArgs<{ id: string }>) {
   const { event, container } = args
@@ -13,17 +13,14 @@ export default async function handleDraftOrderConverted(args: SubscriberArgs<{ i
     return
   }
 
-  const workflowEngineService: any = container.resolve('workflowEngineService')
-
   console.log(
     `[DraftOrderSubscriber] Iniciando computeDraftOrderAdjustmentsWorkflow para o pedido: ${orderId}`,
   )
 
-  await workflowEngineService.run({
+  await computeDraftOrderAdjustmentsWorkflow(container).run({
     input: {
       order_id: orderId,
     },
-    workflow: computeDraftOrderAdjustmentsWorkflow,
   })
 }
 
