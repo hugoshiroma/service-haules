@@ -14,24 +14,24 @@ createPromotionsWorkflow.hooks.promotionsCreated(async ({ promotions }, { contai
 })
 
 // Hook para quando promoções são ATUALIZADAS
-// updatePromotionsWorkflow.hooks.promotionsUpdated(async ({ promotions }, { container }) => {
-//   const activePromotions = promotions.filter((p) => p.status === 'active')
+updatePromotionsWorkflow.hooks.promotionsUpdated(async ({ promotions }, { container }) => {
+  const activePromotions = promotions.filter((p) => p.status === 'active')
 
-//   if (activePromotions.length === 0) {
-//     return
-//   }
+  if (activePromotions.length === 0) {
+    return
+  }
 
-//   console.log(
-//     `[PromotionHooks] ${activePromotions.length} promoção(ões) tornaram-se ativas. Disparando workflows de geração de cupons.`,
-//   )
+  console.log(
+    `[PromotionHooks] ${activePromotions.length} promoção(ões) tornaram-se ativas. Verificando necessidade de geração de cupons...`,
+  )
 
-//   for (const promotion of activePromotions) {
-//     await generateCouponsWorkflow.run({
-//       input: { promotionId: promotion.id },
-//       container,
-//     })
-//   }
-// })
+  for (const promotion of activePromotions) {
+    await generateCouponsWorkflow.run({
+      input: { promotionId: promotion.id },
+      container,
+    })
+  }
+})
 
 // Hook para quando promoções são DELETADAS
 deletePromotionsWorkflow.hooks.promotionsDeleted(async ({ ids }, { container }) => {

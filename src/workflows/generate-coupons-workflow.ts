@@ -33,7 +33,42 @@ const generateCouponsStep = createStep(
 
       console.log(`[GenerateCouponsStep] Encontrados ${customers.length} clientes.`)
 
-      const userCouponsToInsert = customers.map((customer) => ({
+      // Verificar quais clientes JÁ TÊM cupons dessa promoção
+      const { data: existingCoupons, error: checkError } = await supabase
+        .from('user_coupons')
+        .select('customer_id')
+        .eq('promotion_id', promotionId)
+
+      if (checkError) {
+        console.error(`[GenerateCouponsStep] Erro ao verificar cupons existentes:`, checkError)
+        throw new Error(`Erro no Supabase: ${checkError.message}`)
+      }
+
+      const existingCustomerIds = new Set(
+        existingCoupons?.map((coupon) => coupon.customer_id) || [],
+      )
+
+      console.log(
+        `[GenerateCouponsStep] ${existingCustomerIds.size} clientes já possuem cupons desta promoção.`,
+      )
+
+      // Filtrar apenas clientes que NÃO têm cupons dessa promoção
+      const newCustomers = customers.filter(
+        (customer) => !existingCustomerIds.has(customer.id),
+      )
+
+      if (newCustomers.length === 0) {
+        console.log(
+          '[GenerateCouponsStep] Todos os clientes já possuem cupons desta promoção. Nada a fazer.',
+        )
+        return new StepResponse(null)
+      }
+
+      console.log(
+        `[GenerateCouponsStep] Gerando cupons para ${newCustomers.length} novos clientes...`,
+      )
+
+      const userCouponsToInsert = newCustomers.map((customer) => ({
         customer_id: customer.id,
         promotion_id: promotionId,
         created_at: new Date().toISOString(),
