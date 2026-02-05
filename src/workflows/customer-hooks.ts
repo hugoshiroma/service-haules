@@ -17,9 +17,9 @@ createCustomersWorkflow.hooks.customersCreated(
 
     // 1. Buscar todas as promoções ativas que NÃO atingiram o limite
     const promotionService: any = container.resolve(Modules.PROMOTION)
-    
+
     // Lista todas as promoções ativas usando o método correto
-    const activePromotions = await promotionService.listActivePromotions({}, {});
+    const activePromotions = await promotionService.listActivePromotions({}, {})
 
     if (!activePromotions || activePromotions.length === 0) {
       console.log('[CustomerHooks] Nenhuma promoção ativa encontrada.')
@@ -30,12 +30,12 @@ createCustomersWorkflow.hooks.customersCreated(
     const availablePromotions = activePromotions.filter((promo) => {
       // Se não tem limite definido, está disponível
       if (typeof promo.limit !== 'number') {
-        return true;
+        return true
       }
       // Se tem limite, verifica se ainda não atingiu
-      const used = promo.used ?? 0;
-      return used < promo.limit;
-    });
+      const used = promo.used ?? 0
+      return used < promo.limit
+    })
 
     if (availablePromotions.length === 0) {
       console.log('[CustomerHooks] Nenhuma promoção disponível (todas atingiram o limite).')
@@ -44,7 +44,7 @@ createCustomersWorkflow.hooks.customersCreated(
 
     console.log(
       `[CustomerHooks] Encontradas ${activePromotions.length} promoções ativas, ${availablePromotions.length} disponíveis (não esgotadas).`,
-    );
+    )
 
     for (const customer of customers) {
       console.log(`[CustomerHooks] Processando cliente recém-criado: ${customer.id}`)
@@ -64,9 +64,12 @@ createCustomersWorkflow.hooks.customersCreated(
       const { data, error } = await supabase.from('user_coupons').insert(userCouponsToInsert)
 
       if (error) {
-        console.error(`[CustomerHooks] Erro ao inserir cupons para o cliente ${customer.id}:`, error)
+        console.error(
+          `[CustomerHooks] Erro ao inserir cupons para o cliente ${customer.id}:`,
+          error,
+        )
         // Não vamos parar o processo inteiro, apenas logar o erro.
-        continue;
+        continue
       }
 
       console.log(
