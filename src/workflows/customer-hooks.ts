@@ -15,8 +15,7 @@ createCustomersWorkflow.hooks.customersCreated(
     }
     const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
 
-    // 1. Buscar todas as promoções (cupons) ativas
-    // TODO: Descobrir como buscar promoções ativas no Medusa v2
+    // 1. Buscar todas as promoções ativas que NÃO atingiram o limite
     const promotionService: any = container.resolve(Modules.PROMOTION)
     
     // Lista todas as promoções ativas usando o método correto
@@ -27,12 +26,30 @@ createCustomersWorkflow.hooks.customersCreated(
       return
     }
 
-    console.log(`[CustomerHooks] Encontradas ${activePromotions.length} promoções ativas.`)
+    // Filtra promoções que ainda não atingiram o limite
+    const availablePromotions = activePromotions.filter((promo) => {
+      // Se não tem limite definido, está disponível
+      if (typeof promo.limit !== 'number') {
+        return true;
+      }
+      // Se tem limite, verifica se ainda não atingiu
+      const used = promo.used ?? 0;
+      return used < promo.limit;
+    });
+
+    if (availablePromotions.length === 0) {
+      console.log('[CustomerHooks] Nenhuma promoção disponível (todas atingiram o limite).')
+      return
+    }
+
+    console.log(
+      `[CustomerHooks] Encontradas ${activePromotions.length} promoções ativas, ${availablePromotions.length} disponíveis (não esgotadas).`,
+    );
 
     for (const customer of customers) {
       console.log(`[CustomerHooks] Processando cliente recém-criado: ${customer.id}`)
 
-      const userCouponsToInsert = activePromotions.map((promo) => ({
+      const userCouponsToInsert = availablePromotions.map((promo) => ({
         customer_id: customer.id,
         promotion_id: promo.id,
         created_at: new Date().toISOString(),
