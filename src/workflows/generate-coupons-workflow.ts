@@ -53,9 +53,7 @@ const generateCouponsStep = createStep(
       )
 
       // Filtrar apenas clientes que NÃO têm cupons dessa promoção
-      const newCustomers = customers.filter(
-        (customer) => !existingCustomerIds.has(customer.id),
-      )
+      const newCustomers = customers.filter((customer) => !existingCustomerIds.has(customer.id))
 
       if (newCustomers.length === 0) {
         console.log(

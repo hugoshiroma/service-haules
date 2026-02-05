@@ -112,7 +112,9 @@ export default async function handlePaymentCaptured({
           console.log(
             `[payment-captured] 🚨 Promoção ${promotion.code} (ID: ${promotion.id}) atingiu o limite de uso (${updatedPromotion.used}/${updatedPromotion.limit})`,
           )
-          console.log(`[payment-captured] Iniciando remoção de cupons para promoção ${promotion.id}...`)
+          console.log(
+            `[payment-captured] Iniciando remoção de cupons para promoção ${promotion.id}...`,
+          )
 
           try {
             await removeCouponsWorkflow(container).run({
