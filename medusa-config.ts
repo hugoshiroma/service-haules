@@ -23,8 +23,11 @@ module.exports = defineConfig({
       cookieSecret: process.env.COOKIE_SECRET || 'supersecret',
     },
   },
-  modules: [
-    {
+  modules: {
+    contentful: {
+      resolve: "./src/modules/contentful",
+    },
+    file: {
       resolve: '@medusajs/medusa/file',
       options: {
         providers: [
@@ -46,5 +49,5 @@ module.exports = defineConfig({
         ],
       },
     },
-  ],
+  },
 })
