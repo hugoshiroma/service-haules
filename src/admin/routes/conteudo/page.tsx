@@ -1,5 +1,5 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
-import { Container, Heading, Button, Text, Input, FocusModal, Switch, Label, toast } from "@medusajs/ui"
+import { Heading, Button, Text, Input, FocusModal, Switch, Label, toast, Skeleton } from "@medusajs/ui"
 import { useState, useEffect, useRef } from "react"
 
 const COLORS_PALETTE = ["#FFFFFF", "#FCB010", "#51793A", "#5A3F8C", "#000000"]
@@ -164,10 +164,30 @@ const ContentfulHome = () => {
     setDraggedItemIndex(null)
   }
 
-  if (loading) return <div className="p-8"><Text>Carregando conteúdo do Contentful...</Text></div>
+  if (loading) return (
+    <div className="flex flex-col gap-4 p-4">
+      <div className="bg-ui-bg-base border border-ui-border-base rounded-xl p-6">
+        <div className="grid gap-2">
+          <Skeleton className="h-7 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+      </div>
+      <div className="flex flex-col gap-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="bg-ui-bg-base border border-ui-border-base rounded-xl px-4 py-3 flex items-center gap-3">
+            <div className="grid gap-2 flex-1" style={{ overflow: 'hidden' }}>
+              <Skeleton className="h-5 w-40" />
+              <Skeleton className="h-4 w-28" />
+            </div>
+            <Skeleton className="h-7 w-16 shrink-0" />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 
   return (
-    <Container className="p-8">
+    <div className="flex flex-col gap-4 p-4">
       <input
         ref={fileInputRef}
         type="file"
@@ -175,23 +195,24 @@ const ContentfulHome = () => {
         className="hidden"
         onChange={handleImageUpload}
       />
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <Heading level="h1">Home Content Manager</Heading>
-          <Text className="text-ui-fg-subtle">Gerencie o conteúdo do site em tempo real.</Text>
-        </div>
-        <Button variant="secondary" onClick={fetchData}>Atualizar Dados</Button>
+
+      <div className="bg-ui-bg-base border border-ui-border-base rounded-xl p-6">
+        <Heading level="h1">Home Content Manager</Heading>
+        <Text className="text-ui-fg-subtle">Gerencie o conteúdo do site em tempo real.</Text>
       </div>
 
-      <div className="grid gap-4">
+      <div className="flex flex-col gap-2">
         {data?.secoes?.map((section: any, index: number) => (
-          <Container key={section.id} className="p-6 flex items-center justify-between shadow-sm hover:border-ui-border-strong transition-colors">
-            <div>
-              <Heading level="h3">Seção {index + 1}: {section.type}</Heading>
-              <Text className="text-ui-fg-subtle">{section.fields.titulo?.['en-US'] || "Sem título"}</Text>
+          <div
+            key={section.id}
+            className="bg-ui-bg-base border border-ui-border-base rounded-xl px-4 py-3 flex items-center gap-3 hover:border-ui-border-strong transition-colors"
+          >
+            <div style={{ overflow: 'hidden', flex: 1 }}>
+              <Heading level="h3" className="truncate">Seção {index + 1}: {section.type}</Heading>
+              <Text className="text-ui-fg-subtle truncate">{section.fields.titulo?.['en-US'] || "Sem título"}</Text>
             </div>
-            <Button variant="secondary" onClick={() => setEditingSection({...section})}>Editar Seção</Button>
-          </Container>
+            <Button size="small" variant="secondary" style={{ flexShrink: 0, whiteSpace: 'nowrap' }} onClick={() => setEditingSection({...section})}>Editar</Button>
+          </div>
         ))}
       </div>
 
@@ -249,34 +270,56 @@ const ContentfulHome = () => {
                   }
 
                   if (key.toLowerCase().includes('color')) {
+                    const normalizedVal = (val || '').trim().toUpperCase()
+                    const selectedPaletteColor = COLORS_PALETTE.find(c => c.toUpperCase() === normalizedVal) ?? null
                     return (
                       <div key={key} className="grid gap-3 border-b pb-6">
                         <Label weight="plus">{label}</Label>
-                        <div className="flex gap-3 mb-2 py-2">
-                          {COLORS_PALETTE.map(color => (
-                            <button 
-                              key={color}
-                              type="button"
-                              onClick={() => {
-                                setEditingSection({
-                                    ...editingSection,
-                                    fields: { ...editingSection.fields, [key]: { 'en-US': color } }
-                                })
-                              }}
-                              className="w-8 h-8 rounded-full border border-ui-border-base shadow-sm hover:scale-110 transition-transform focus:outline-none"
-                              style={{ backgroundColor: color }}
-                              title={color}
+                        <div className="flex gap-3 mb-2 py-2 items-center">
+                          {COLORS_PALETTE.map(color => {
+                            const isSelected = selectedPaletteColor?.toUpperCase() === color.toUpperCase()
+                            return (
+                              <button
+                                key={color}
+                                type="button"
+                                onClick={() => {
+                                  setEditingSection({
+                                      ...editingSection,
+                                      fields: { ...editingSection.fields, [key]: { 'en-US': color } }
+                                  })
+                                }}
+                                className={`relative w-8 h-8 rounded-full shadow-sm hover:scale-110 transition-transform focus:outline-none ${isSelected ? 'ring-2 ring-offset-2 ring-ui-border-interactive scale-110' : 'border border-ui-border-base'}`}
+                                style={{ backgroundColor: color }}
+                                title={color}
+                              >
+                                {isSelected && (
+                                  <span
+                                    className="absolute inset-0 flex items-center justify-center text-xs font-bold leading-none"
+                                    style={{ color: color === '#FFFFFF' || color === '#FCB010' ? '#000' : '#fff' }}
+                                  >
+                                    ✓
+                                  </span>
+                                )}
+                              </button>
+                            )
+                          })}
+                          {val && !selectedPaletteColor && (
+                            <div
+                              className="w-8 h-8 rounded-full border-2 border-ui-border-interactive shadow-sm flex-shrink-0"
+                              style={{ backgroundColor: val }}
+                              title={`Cor personalizada: ${val}`}
                             />
-                          ))}
+                          )}
                         </div>
-                        <Input 
-                          value={val || ""} 
+                        <Input
+                          value={val || ""}
                           onChange={(e) => {
                             setEditingSection({
                                 ...editingSection,
                                 fields: { ...editingSection.fields, [key]: { 'en-US': e.target.value } }
                             })
                           }}
+                          placeholder="#000000"
                         />
                       </div>
                     )
@@ -384,7 +427,7 @@ const ContentfulHome = () => {
           </FocusModal.Content>
         </FocusModal>
       )}
-    </Container>
+    </div>
   )
 }
 
