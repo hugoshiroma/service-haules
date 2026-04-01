@@ -28,6 +28,48 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   }
 };
 
+export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
+  const { key, title, description, enabled } = req.body as {
+    key: string;
+    title: string;
+    description: string;
+    enabled?: boolean;
+  };
+
+  if (!key || !title || !description) {
+    return res.status(400).json({ error: "Campos 'key', 'title' e 'description' são obrigatórios." });
+  }
+
+  try {
+    const response = await fetch(
+      `${supabaseUrl}/rest/v1/feature_flags`,
+      {
+        method: "POST",
+        headers: {
+          ...supabaseHeaders,
+          Prefer: "return=representation",
+        },
+        body: JSON.stringify({
+          key: key.trim().toLowerCase().replace(/\s+/g, "_"),
+          title: title.trim(),
+          description: description.trim(),
+          enabled: enabled ?? false,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.text();
+      return res.status(502).json({ error });
+    }
+
+    const data = await response.json();
+    res.status(201).json(data[0] ?? { success: true });
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+};
+
 export const PATCH = async (req: MedusaRequest, res: MedusaResponse) => {
   const { key, enabled } = req.body as { key: string; enabled: boolean };
 
