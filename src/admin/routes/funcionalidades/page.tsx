@@ -170,18 +170,22 @@ const FeatureFlagsPage = () => {
                 <Input
                   placeholder="Ex: Playlist do Bar"
                   value={form.title}
-                  onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                  onChange={(e) => {
+                    const title = e.target.value
+                    const autoKey = title.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "")
+                    setForm((f) => ({ ...f, title, key: autoKey }))
+                  }}
                 />
               </div>
 
               <div className="grid gap-2">
                 <Label weight="plus">Chave (key)</Label>
                 <Input
-                  placeholder="Ex: playlist (gerado automaticamente)"
+                  placeholder="gerado automaticamente pelo nome"
                   value={form.key}
                   onChange={(e) => setForm((f) => ({ ...f, key: e.target.value }))}
                 />
-                <Text className="text-ui-fg-subtle text-xs">Identificador único. Letras minúsculas e underscores. Não pode ser alterado depois.</Text>
+                <Text className="text-ui-fg-subtle text-xs">Identificador único usado no código. Gerado pelo nome, mas pode ser editado. Não pode ser alterado depois.</Text>
               </div>
 
               <div className="grid gap-2">

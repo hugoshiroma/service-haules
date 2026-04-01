@@ -50,7 +50,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
           Prefer: "return=representation",
         },
         body: JSON.stringify({
-          key: key.trim().toLowerCase().replace(/\s+/g, "_"),
+          key: key.trim().toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, ""),
           title: title.trim(),
           description: description.trim(),
           enabled: enabled ?? false,
