@@ -13,7 +13,7 @@ module.exports = defineConfig({
     },
   ],
   projectConfig: {
-    workerMode: 'server',
+    workerMode: 'shared',
     databaseUrl: process.env.DATABASE_URL,
     http: {
       storeCors: process.env.STORE_CORS!,
