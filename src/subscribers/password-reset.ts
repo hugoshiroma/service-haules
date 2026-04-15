@@ -10,7 +10,7 @@ export default async function passwordResetHandler({
 }>) {
   const logger = container.resolve('logger')
 
-  const { entity_id: email, token } = data
+  const { entity_id: email, actor_type, token } = data
 
   if (!email || !token) {
     logger.warn('[passwordResetHandler] Payload incompleto: email ou token ausente')
@@ -26,7 +26,10 @@ export default async function passwordResetHandler({
     return
   }
 
-  const resetLink = `${frontendUrl}/nova-senha?token=${encodeURIComponent(token)}`
+  // Funcionários (actor_type=user) precisam do parâmetro type=employee
+  // para que /nova-senha use o endpoint correto do Medusa (/auth/user/emailpass/update)
+  const typeParam = actor_type === 'user' ? '&type=employee' : ''
+  const resetLink = `${frontendUrl}/nova-senha?token=${encodeURIComponent(token)}${typeParam}`
 
   logger.info(`[passwordResetHandler] Enviando e-mail de reset para: ${email}`)
 
