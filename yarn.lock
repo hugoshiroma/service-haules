@@ -3113,7 +3113,7 @@
     tailwindcss "^3.4.3"
     vite "^5.4.21"
 
-"@medusajs/admin-sdk@^2.12.1":
+"@medusajs/admin-sdk@2.12.2":
   version "2.12.2"
   resolved "https://registry.yarnpkg.com/@medusajs/admin-sdk/-/admin-sdk-2.12.2.tgz#2020e3c871ec5baab47d92cb442f44d13d79efa6"
   integrity sha512-UzdbS1FGwQEalu9Aa9A72PQm/tKKvDugN5pBu98RGKKQo5IFefOshimA5ECwwZEG1tUlV5LY/C2m31tBxfLtKA==
@@ -3331,7 +3331,7 @@
   resolved "https://registry.yarnpkg.com/@medusajs/cart/-/cart-2.12.2.tgz#48f2335b904b7bc4cfad138626fc195f2334d077"
   integrity sha512-sth5ucb2DdyjUdthSYeGjETSVuGKI4EFSNSipn3xUl+Ch8KnqMnfLWIlcpSBFzGSatJ6FOLPvzw0bCzUgXitsg==
 
-"@medusajs/cli@^2.12.1":
+"@medusajs/cli@2.12.2":
   version "2.12.2"
   resolved "https://registry.yarnpkg.com/@medusajs/cli/-/cli-2.12.2.tgz#1b0b3cd19c146ae30e92a3db461b8222dd56910c"
   integrity sha512-IjaSsNduSei+xhtNXapS/lYhKHaNKvSq1hP5qB6WzU4OBAgXh6FE7mwq6UHfWz7mrnAs2Y4YJFywt46LwwLsbQ==
@@ -3493,7 +3493,7 @@
   resolved "https://registry.yarnpkg.com/@medusajs/file/-/file-2.12.2.tgz#856c9669e207cddf0ff8801fdebe04b511116d82"
   integrity sha512-9vB7qwXjn4TrFrcatsDAYXzSCZfLRgKutuKknRMg9sDWRwvXFXHWqE3NHE5sP6b0VBbhKQ1BmfedEMAWh1SKSA==
 
-"@medusajs/framework@^2.12.1":
+"@medusajs/framework@2.12.2":
   version "2.12.2"
   resolved "https://registry.yarnpkg.com/@medusajs/framework/-/framework-2.12.2.tgz#8ac37436a4fef67eb0382eeeb7832b7cab1066b5"
   integrity sha512-C/17gKApJJ7z+jkURk6zR0jbrCyz0smydOuBHU3fP6S856xH2LW5n0+Lf9NHycNgDL8+7VmFmUK6DyvNUupIBQ==
@@ -3589,7 +3589,7 @@
     retry-axios "^2.6.0"
     uuid "^9.0.0"
 
-"@medusajs/medusa@^2.12.1":
+"@medusajs/medusa@2.12.2":
   version "2.12.2"
   resolved "https://registry.yarnpkg.com/@medusajs/medusa/-/medusa-2.12.2.tgz#379890cc1b0cdcc12bd6c62f09104d50f43c67d7"
   integrity sha512-IsdQ8x0UkrIHK9rr/wlDteLMPekA3ywLPYb20oF/GlS4yCmKkdcth090k0MG6EklEt11SYcrTWOOvOoY661Yzg==
@@ -3776,7 +3776,7 @@
     remove-trailing-slash "^0.1.1"
     uuid "^9.0.0"
 
-"@medusajs/test-utils@^2.12.1":
+"@medusajs/test-utils@2.12.2":
   version "2.12.2"
   resolved "https://registry.yarnpkg.com/@medusajs/test-utils/-/test-utils-2.12.2.tgz#c71c099c7263aa0072c35a2926723a58cf3c3ba6"
   integrity sha512-GucCknZSJK+xkQZ5lqhk08hmsz9zuhzTgmdmhcMIDbRn/MBaB30kCZG3hS63yOc5r9HFYyP30A4EKx+/slSpTQ==
@@ -9162,6 +9162,13 @@
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-1.3.5.tgz#1ef302e01cf7d2b5a0fa526790c9123bf1d06690"
   integrity sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==
+
+"@types/multer@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/multer/-/multer-2.1.0.tgz#c6ae866b9a3d9310b477d021a78b33feda092358"
+  integrity sha512-zYZb0+nJhOHtPpGDb3vqPjwpdeGlGC157VpkqNQL+UU2qwoacoQ7MpsAmUptI/0Oa127X32JzWDqQVEXp2RcIA==
+  dependencies:
+    "@types/express" "*"
 
 "@types/mute-stream@^0.0.4":
   version "0.0.4"
@@ -14891,6 +14898,16 @@ multer@^2.0.2:
     object-assign "^4.1.1"
     type-is "^1.6.18"
     xtend "^4.0.2"
+
+multer@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/multer/-/multer-2.1.1.tgz#122d819244fbdfee1efddd9147426691014385b7"
+  integrity sha512-mo+QTzKlx8R7E5ylSXxWzGoXoZbOsRMpyitcht8By2KHvMbf3tjwosZ/Mu/XYU6UuJ3VZnODIrak5ZrPiPyB6A==
+  dependencies:
+    append-field "^1.0.0"
+    busboy "^1.6.0"
+    concat-stream "^2.0.0"
+    type-is "^1.6.18"
 
 multicast-dns@^7.2.5:
   version "7.2.5"
