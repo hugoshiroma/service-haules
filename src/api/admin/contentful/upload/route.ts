@@ -2,22 +2,22 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import ContentfulService from "../../../../modules/contentful/service"
 
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
-  const { data, filename, mimeType } = req.body as {
-    data?: string
-    filename?: string
-    mimeType?: string
-  }
+  const files = (req as any).files as Express.Multer.File[]
 
-  if (!data || !filename || !mimeType) {
-    return res.status(400).json({ error: "Dados incompletos: data, filename e mimeType são obrigatórios." })
+  if (!files?.length) {
+    return res.status(400).json({ error: "Nenhum arquivo enviado." })
   }
-
-  const buffer = Buffer.from(data, "base64")
 
   try {
     const contentfulService: ContentfulService = req.scope.resolve("contentful")
-    const result = await contentfulService.uploadAsset(buffer, filename, mimeType)
-    res.json(result)
+
+    const results = await Promise.all(
+      files.map((file) =>
+        contentfulService.uploadAsset(file.buffer, file.originalname, file.mimetype)
+      )
+    )
+
+    res.json({ assets: results })
   } catch (error) {
     console.error("[POST /admin/contentful/upload] Error:", error.message)
     res.status(500).json({ error: error.message || "Erro ao fazer upload da imagem." })

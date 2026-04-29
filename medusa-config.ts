@@ -21,9 +21,6 @@ module.exports = defineConfig({
       authCors: process.env.AUTH_CORS!,
       jwtSecret: process.env.JWT_SECRET || 'supersecret',
       cookieSecret: process.env.COOKIE_SECRET || 'supersecret',
-      bodyParser: {
-        sizeLimit: "15mb",
-      },
     },
   },
   modules: {

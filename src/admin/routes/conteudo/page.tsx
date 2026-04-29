@@ -31,7 +31,8 @@ const ContentfulHome = () => {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [editingSection, setEditingSection] = useState<any>(null)
-  const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null)
+  const [draggedPostIndex, setDraggedPostIndex] = useState<number | null>(null)
+  const [draggedAsset, setDraggedAsset] = useState<{ field: string; index: number } | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -60,7 +61,7 @@ const ContentfulHome = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ entryId, fields }),
       })
-      
+
       if (response.ok) {
         toast.success("Conteúdo atualizado e publicado com sucesso!")
         fetchData()
@@ -94,33 +95,33 @@ const ContentfulHome = () => {
     const field = currentUploadFieldRef.current
     if (!e.target.files?.length || !field) return
 
-    const file = e.target.files[0]
-
-    const base64 = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve((reader.result as string).split(",")[1])
-      reader.onerror = reject
-      reader.readAsDataURL(file)
-    })
+    const files = Array.from(e.target.files)
+    const formData = new FormData()
+    files.forEach((file) => formData.append("files", file))
 
     setIsUploading(true)
     try {
       const response = await fetch("/admin/contentful/upload", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: base64, filename: file.name, mimeType: file.type }),
+        body: formData,
       })
       const result = await response.json()
-      if (result.url && result.id) {
-        const newAsset = { _type: "Asset", id: result.id, url: result.url, title: file.name }
+      if (result.assets?.length) {
+        const newAssets = result.assets.map((a: any, i: number) => ({
+          _type: "Asset",
+          id: a.id,
+          url: a.url,
+          title: files[i]?.name ?? a.id,
+        }))
         setEditingSection((prev: any) => {
           const current = prev.fields[field]?.["en-US"]
           const currentArray = Array.isArray(current) ? current : []
           return {
             ...prev,
-            fields: { ...prev.fields, [field]: { "en-US": [...currentArray, newAsset] } },
+            fields: { ...prev.fields, [field]: { "en-US": [...currentArray, ...newAssets] } },
           }
         })
+        toast.success(`${newAssets.length} imagem(ns) enviada(s) com sucesso!`)
       } else {
         toast.error(`Erro no upload: ${result.error || "resposta inesperada do servidor"}`)
       }
@@ -143,25 +144,41 @@ const ContentfulHome = () => {
     }))
   }
 
-  const onDragStart = (e: React.DragEvent, index: number) => {
-    setDraggedItemIndex(index)
+  // Drag-and-drop for posts
+  const onPostDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedPostIndex(index)
     e.dataTransfer.effectAllowed = "move"
   }
 
-  const onDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-  }
-
-  const onDrop = (e: React.DragEvent, index: number) => {
-    if (draggedItemIndex === null || draggedItemIndex === index) return
+  const onPostDrop = (e: React.DragEvent, index: number) => {
+    if (draggedPostIndex === null || draggedPostIndex === index) return
     const posts = [...editingSection.fields.posts['en-US']]
-    const item = posts.splice(draggedItemIndex, 1)[0]
+    const item = posts.splice(draggedPostIndex, 1)[0]
     posts.splice(index, 0, item)
     setEditingSection({
       ...editingSection,
       fields: { ...editingSection.fields, posts: { 'en-US': posts } }
     })
-    setDraggedItemIndex(null)
+    setDraggedPostIndex(null)
+  }
+
+  // Drag-and-drop for assets (images)
+  const onAssetDragStart = (e: React.DragEvent, field: string, index: number) => {
+    setDraggedAsset({ field, index })
+    e.dataTransfer.effectAllowed = "move"
+  }
+
+  const onAssetDrop = (e: React.DragEvent, field: string, index: number) => {
+    e.preventDefault()
+    if (!draggedAsset || draggedAsset.field !== field || draggedAsset.index === index) return
+    const assets = [...editingSection.fields[field]['en-US']]
+    const item = assets.splice(draggedAsset.index, 1)[0]
+    assets.splice(index, 0, item)
+    setEditingSection((prev: any) => ({
+      ...prev,
+      fields: { ...prev.fields, [field]: { 'en-US': assets } }
+    }))
+    setDraggedAsset(null)
   }
 
   if (loading) return (
@@ -192,6 +209,7 @@ const ContentfulHome = () => {
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        multiple
         className="hidden"
         onChange={handleImageUpload}
       />
@@ -225,15 +243,15 @@ const ContentfulHome = () => {
                 {Object.keys(editingSection.fields).map((key) => {
                   const val = editingSection.fields[key]?.['en-US']
                   const label = formatLabel(key)
-                  
+
                   if (typeof val === 'boolean' || key.startsWith('eh')) {
                     return (
                       <div key={key} className="flex items-center justify-between border-b pb-4">
                         <div>
                           <Text weight="plus">{label}</Text>
                         </div>
-                        <Switch 
-                          checked={val || false} 
+                        <Switch
+                          checked={val || false}
                           onCheckedChange={(checked) => {
                             setEditingSection({
                                 ...editingSection,
@@ -254,10 +272,10 @@ const ContentfulHome = () => {
                           <Button size="small" variant="secondary" onClick={() => applyFormatting('*', '*')}><i>I</i></Button>
                           <Button size="small" variant="secondary" onClick={() => applyFormatting('*__', '__*')}><b><i>BI</i></b></Button>
                         </div>
-                        <textarea 
+                        <textarea
                           ref={textAreaRef}
                           className="flex min-h-[120px] w-full rounded-md border border-ui-border-base bg-ui-bg-field px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ui-border-interactive"
-                          value={val || ""} 
+                          value={val || ""}
                           onChange={(e) => {
                             setEditingSection({
                                 ...editingSection,
@@ -331,12 +349,12 @@ const ContentfulHome = () => {
                         <Label weight="plus">{label}</Label>
                         <div className="grid gap-2 border border-ui-border-base rounded-lg p-2 bg-ui-bg-subtle">
                           {val.map((post: string, pIndex: number) => (
-                            <div 
+                            <div
                               key={pIndex} draggable
-                              onDragStart={(e) => onDragStart(e, pIndex)}
-                              onDragOver={onDragOver}
-                              onDrop={(e) => onDrop(e, pIndex)}
-                              className={`flex items-center gap-3 bg-ui-bg-base p-4 rounded border shadow-sm cursor-grab active:cursor-grabbing transition-all ${draggedItemIndex === pIndex ? 'opacity-50 border-ui-border-interactive' : ''}`}
+                              onDragStart={(e) => onPostDragStart(e, pIndex)}
+                              onDragOver={(e) => e.preventDefault()}
+                              onDrop={(e) => onPostDrop(e, pIndex)}
+                              className={`flex items-center gap-3 bg-ui-bg-base p-4 rounded border shadow-sm cursor-grab active:cursor-grabbing transition-all ${draggedPostIndex === pIndex ? 'opacity-50 border-ui-border-interactive' : ''}`}
                             >
                               <span className="text-ui-fg-muted font-mono">⠿</span>
                               <div className="flex-1"><Text>{post}</Text></div>
@@ -352,14 +370,22 @@ const ContentfulHome = () => {
                     return (
                       <div key={key} className="grid gap-3 border-b pb-6">
                         <Label weight="plus">{label}</Label>
+                        <Text className="text-ui-fg-subtle text-xs">Arraste para reordenar</Text>
                         <div className="flex flex-wrap gap-3">
-                          {val.map((asset: any) => (
-                            <div key={asset.id} className="relative group flex-shrink-0">
+                          {val.map((asset: any, aIndex: number) => (
+                            <div
+                              key={asset.id}
+                              draggable
+                              onDragStart={(e) => onAssetDragStart(e, key, aIndex)}
+                              onDragOver={(e) => e.preventDefault()}
+                              onDrop={(e) => onAssetDrop(e, key, aIndex)}
+                              className={`relative group flex-shrink-0 cursor-grab active:cursor-grabbing transition-all ${draggedAsset?.field === key && draggedAsset?.index === aIndex ? 'opacity-40 scale-95' : ''}`}
+                            >
                               {asset.url ? (
                                 <img
                                   src={asset.url}
                                   alt={asset.title || label}
-                                  className="w-20 h-20 object-cover rounded-md border border-ui-border-base shadow-sm"
+                                  className="w-20 h-20 object-cover rounded-md border border-ui-border-base shadow-sm pointer-events-none"
                                 />
                               ) : (
                                 <div className="w-20 h-20 rounded-md border border-ui-border-base bg-ui-bg-subtle flex items-center justify-center text-ui-fg-muted text-xs">
@@ -412,7 +438,7 @@ const ContentfulHome = () => {
             </FocusModal.Body>
             <FocusModal.Footer>
               <Button variant="secondary" onClick={() => setEditingSection(null)}>Cancelar</Button>
-              <Button 
+              <Button
                 onClick={() => {
                   const fieldsToUpdate: any = {}
                   Object.keys(editingSection.fields).forEach(k => {
